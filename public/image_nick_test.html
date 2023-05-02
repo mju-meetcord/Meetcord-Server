@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Test (Temp)</title>
+</head>
+<body>
+  <h1>image_nick_test</h1>
+  <div>nick : <input type="text" id="nick"></div>
+  <div>image : <input type="file" accept="image/*" id="image"></div>
+  <button id="upload-btn">업로드</button>
+  <script>
+    const uploadBtn = document.getElementById('upload-btn');
+    const fs = new FileReader();
+
+    uploadBtn.addEventListener('click', () => {
+      const nick = document.getElementById('nick').value;
+      const image = document.getElementById('image').files[0];
+
+      fs.onload = ()=>{
+        const formData = new FormData();
+        formData.append('image', fs.result);
+
+        fetch('/user', {
+          method: 'POST',
+          body:formData 
+        })
+        .then(response => response.json())
+        .then(response =>{
+          alert(JSON.stringify(response))
+        })
+        .catch(error => console.error(error));
+      };
+
+      fs.readAsDataURL(image);
+
+      /*const formData = new FormData();
+      formData.append('image', image);
+      fetch('/user', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(response =>{
+        alert(JSON.stringify(response))
+      })
+      .catch(error => console.error(error));*/
+
+    });
+  </script>
+</body>
+</html>

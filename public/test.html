@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login API Documentation</title>
+  <style>
+    body {
+        background-color: #1a1a1a;
+        color: #fff;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      
+      h1, h2, h3 {
+        color: #e5e5e5;
+      }
+      
+      pre, code {
+        background-color: #222;
+        color: #fff;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 5px;
+      }
+      
+      ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      
+      li {
+        margin-bottom: 10px;
+      }
+      
+      p {
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+      
+  </style>
+</head>
+<body>
+  <h1>Login API Documentation</h1>
+  
+  <h2>Endpoint</h2>
+  <p>/login</p>
+
+  <h2>Method</h2>
+  <p>POST</p>
+
+  <h2>Description</h2>
+  <p>사용자 로그인 요청을 처리하는 API입니다.</p>
+
+  <h2>Request Headers</h2>
+  <ul>
+    <li>Content-Type: application/json</li>
+  </ul>
+
+  <h2>Request Body</h2>
+  <pre><code>{
+  "email": "user@example.com",
+  "password": "secretpassword"
+}</code></pre>
+
+  <h2>Response</h2>
+
+  <h3>200 OK</h3>
+  <p>로그인 성공 시 반환되는 응답</p>
+  <pre><code>{
+  "email": "user@example.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+  "message": "로그인에 성공했습니다."
+}</code></pre>
+
+  <h3>401 Unauthorized</h3>
+  <p>해당하는 이메일이 없는 경우 반환되는 응답</p>
+  <pre><code>{
+  "message": "해당하는 이메일이 없습니다."
+}</code></pre>
+
+  <h3>402 Forbidden</h3>
+  <p>비밀번호가 일치하지 않는 경우 반환되는 응답</p>
+  <pre><code>{
+  "message": "비밀번호가 일치하지 않습니다."
+}</code></pre>
+
+  <h2>Error Response</h2>
+
+  <h3>400 Bad Request</h3>
+  <pre><code>{
+  "message": "잘못된 요청입니다."
+}</code></pre>
+</body>
+</html>

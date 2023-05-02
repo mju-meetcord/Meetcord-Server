@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Test (Temp)</title>
+</head>
+<body>
+  <h1>Login Test (Temp)</h1>
+  <div>E-mail : <input type="email" id="email"></div>
+  <div>pw : <input type="password" id="password"></div>
+  <button id="login-btn">로그인</button>
+  <script>
+    const loginBtn = document.getElementById('login-btn');
+
+    loginBtn.addEventListener('click', () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      })
+      .then(response => response.json())
+      .then(response =>{
+        alert(JSON.stringify(response))
+      })
+      .catch(error => console.error(error));
+    });
+  </script>
+</body>
+</html>

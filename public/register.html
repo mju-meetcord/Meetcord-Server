@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register Test (Temp)</title>
+</head>
+<body>
+  <h1>Register Test (Temp)</h1>
+  <div>이름 : <input type="text" id="name"></div>
+  <div>전화 번호 : <input type="number" id="phoneNum"></div>
+  <div>생년 월일 : <input type="date" id="birth"></div>
+  <div>이메일  : <input type="email" id="email"><button id="email_auth_btn">이메일 인증하기</button></div>
+  <div id="otpBox" style="display: none;"><input type="number" id="EmailOtp"><button id="otp_btn">otp 인증하기</button></div>
+  <div>비밀번호 : <input type="password" id="password"></div>
+  <div>비밀번호 확인 : <input type="password" id="password_2"></div>
+
+  <div>개인정보 수집 동의 : <input type="checkbox" id="chbox"></div>
+  <button id="register-btn">가입 하기</button>
+  <script>
+    const registerBtn = document.getElementById('register-btn');
+    const emailAuthBtn = document.getElementById('email_auth_btn');
+    const OtpBtn = document.getElementById('otp_btn');
+
+    var Token = "";
+
+    emailAuthBtn.addEventListener('click', () => {
+
+      const email = document.getElementById('email').value;
+
+      fetch('/emailAuth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email
+        })
+      })
+      .then(response => response.json())
+      .then(response =>{
+        console.log(response);
+        // 응답에서 중복 여부
+
+        // 1. 중복이면 중복되었다고 빠꾸
+        if(response.result == 200){
+          document.getElementById('email').style.border = "1px solid black";
+          document.getElementById('otpBox').style.display = "inline";
+          document.getElementById('email').disabled="disabled";
+          emailAuthBtn.disabled="disabled";
+
+          Token = response.token;
+          console.log(Token);
+        }else{
+          document.getElementById('email').style.border = "1px solid red";
+        }
+
+        // 2. 중복이아니면 성공하고 opt input 활성화 , 토큰 저장.
+      })
+      .catch(error => console.error(error));
+    });
+
+    OtpBtn.addEventListener('click', () => {
+
+      const Otp = document.getElementById('EmailOtp').value;
+      const email = document.getElementById('email').value;
+
+      fetch('/emailAuth', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          otp:Otp,
+          token:Token
+        })
+      })
+      .then(response => response.json())
+      .then(response =>{
+        console.log(response);
+        if(response.result == 200){
+          document.getElementById('EmailOtp').style.border = "1px solid green";
+          document.getElementById('EmailOtp').disabled = "disabled";
+          OtpBtn.disabled = "disabled";
+        }else{
+          document.getElementById('EmailOtp').style.border = "1px solid red";
+        }
+      })
+      .catch(error => console.error(error));
+    });
+
+    registerBtn.addEventListener('click', () => {
+      const name = document.getElementById('name').value;
+      const phoneNum = document.getElementById('phoneNum').value;
+      const birth = document.getElementById('birth').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!OtpBtn.disabled){
+        alert("이메일 인증이 완료되지 않았습니다.");
+        return;
+      }
+
+      if(password != document.getElementById('password_2').value){
+        alert("비밀번호와 비밀번호확인 결과와 같지 않습니다.");
+        return;
+      }
+
+      fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: name,
+          phoneNum:phoneNum,
+          birth:birth,
+          email: email,
+          password: password,
+        })
+      })
+      .then(response => response.json())
+      .then(response =>{
+        alert(response.message);
+      })
+      .catch(error => console.error(error));
+    });
+  </script>
+</body>
+</html>
