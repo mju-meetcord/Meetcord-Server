@@ -10,18 +10,18 @@ router.get('/', async function (req, res, next) {
 
     console.log(data);
 
-    res.send(data);
-    /*if (result == 0) {
+    if (!data) {
         res.status(401).json({
             result: 401,
-            message: '회원가입 실패 ,다시 시도하세요.'
+            message: 'meet 리스트 조회 실패'
         });
     } else {
         res.status(200).json({
             result: 200,
-            message: "회원가입 성공"
+            data: data,
+            message: "meet 리스트 조회 성공"
         });
-    }*/
+    }
 });
 
 module.exports = router;
