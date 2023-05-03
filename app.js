@@ -11,6 +11,7 @@ var loginRouter = require('./routes/login');
 var emailAuthRouter = require('./routes/emailAuth');
 var registerRouter = require('./routes/register');
 var userRouter = require('./routes/user');
+var meetRouter = require('./routes/meet');
 
 
 var app = express();
@@ -21,12 +22,16 @@ app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //app.use(bodyParser.json({limit:10000000}));
-app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.json({
+  limit: '50mb'
+}));
 
 app.use(cors({
   origin: true,
@@ -36,16 +41,17 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/emailAuth', emailAuthRouter);
-app.use('/register',registerRouter);
-app.use('/user',userRouter);
+app.use('/register', registerRouter);
+app.use('/user', userRouter);
+app.use('/meet', meetRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

@@ -83,9 +83,33 @@ const deleteAccount = () => {
 
 };
 
+const readMeetList = async () => {
+  console.log("DB Read MeetList");
+
+
+  const sql = 'SELECT name,description FROM `groups` ';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql);
+    if (rows.length) {
+      console.log(rows);
+
+      return rows;
+    } else {
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 module.exports = {
   CreateAccount,
   readAccount,
   updateAccount,
-  deleteAccount
+  deleteAccount,
+  readMeetList
 };
