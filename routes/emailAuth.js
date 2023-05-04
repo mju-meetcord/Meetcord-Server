@@ -54,12 +54,14 @@ router.post('/', async function(req, res, next) {
               if (error) {
                   console.log(error);
               } else {
-                res.status(200).json({ 
-                    token: token,
-                    message: "사용가능한 Email , otp 숫자가 해당 Email로 전송되었습니다.",
-                    result: 200
-                });
+                console.log(info);
               }
+        });
+        
+        res.status(200).json({ 
+            token: token,
+            message: "사용가능한 Email , otp 숫자가 해당 Email로 전송되었습니다.",
+            result: 200
         });
 
     }else{
