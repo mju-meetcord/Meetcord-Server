@@ -12,7 +12,7 @@ var emailAuthRouter = require('./routes/emailAuth');
 var registerRouter = require('./routes/register');
 var userRouter = require('./routes/user');
 var meetRouter = require('./routes/meet');
-
+var myMeetRouter = require('./routes/myMeet');
 
 var app = express();
 
@@ -44,6 +44,7 @@ app.use('/emailAuth', emailAuthRouter);
 app.use('/register', registerRouter);
 app.use('/user', userRouter);
 app.use('/meet', meetRouter);
+app.use('/myMeet', myMeetRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

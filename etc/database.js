@@ -83,16 +83,16 @@ const deleteAccount = () => {
 
 };
 
-const readMeetList = async () => {
+const readMeetList = async (data) => {
   console.log("DB Read MeetList");
 
 
-  const sql = 'SELECT name,description FROM `groups` ';
+  const sql = 'SELECT name,description FROM `groups` WHERE name LIKE ?';
 
   console.log("DB request query : " + sql);
 
   try {
-    const [rows, fields] = await connection.execute(sql);
+    const [rows, fields] = await connection.execute(sql,[ '%'+data+'%']);
     if (rows.length) {
       console.log(rows);
 

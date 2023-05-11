@@ -8,31 +8,38 @@
   </head>
   <body>
     <h1>Meet List</h1>
-    <div style="display: flex; flex-direction: column"></div>
+    <div>
+      <input type="text" id="searchInput" />
+      <button onclick="search()">검색</button>
+    </div>
+    <div id="listArea" style="display: flex; flex-direction: column"></div>
     <script>
-      fetch("/meet", {
-        method: "get",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((response) => {
-          let data = response.data;
+      const search = () => {
+        const keyword = document.getElementById("searchInput").value; // 검색어를 가져옴
 
-          data.forEach((data) => makeList(data.name, data.description));
-
-          console.log(data);
+        fetch(`/meet?keyword=${keyword}`, {
+          // 검색어를 URL에 추가하여 GET 요청
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
         })
-        .catch((error) => console.error(error));
+          .then((response) => response.json())
+          .then((response) => {
+            document.getElementById("listArea").innerHTML = "";
+            let data = response.data;
+            data.forEach((data) => makeList(data.name, data.description));
+          })
+          .catch((error) => console.error(error));
 
-      const makeList = (name, description) => {
-        let node = document.createElement("div");
-        node.innerText = name + " : " + description;
-        node.style =
-          "width: 300px; border: 1px solid black; display: inline-block;";
+        const makeList = (name, description) => {
+          let node = document.createElement("div");
+          node.innerText = name + " : " + description;
+          node.style =
+            "width: 300px; border: 1px solid black; display: inline-block;";
 
-        document.body.children[1].appendChild(node);
+          document.getElementById("listArea").appendChild(node);
+        };
       };
     </script>
   </body>

@@ -1,18 +1,25 @@
 var express = require('express');
 var router = express.Router();
+const { verifyToken } = require('../etc/token');
 const {
     readMeetList
 } = require('../etc/database');
 
-router.get('/', async function (req, res, next) {
+router.post('/', async function (req, res, next) {
 
-    console.log(req.query.keyword);
+    //const data = await readMeetList();
+    //console.log(data);
 
-    const data = await readMeetList(req.query.keyword);
+    console.log(req.body.token);
 
-    console.log(data);
+    const email = verifyToken(req.body.token);
+    console.log(email);
 
-    if (!data) {
+    res.status(200).json({
+        data:123
+    });
+
+    /*if (!data) {
         res.status(401).json({
             result: 401,
             message: 'meet 리스트 조회 실패'
@@ -23,7 +30,7 @@ router.get('/', async function (req, res, next) {
             data: data,
             message: "meet 리스트 조회 성공"
         });
-    }
+    }*/
 });
 
 module.exports = router;

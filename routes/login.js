@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const { CreateAccount , readAccount,updateAccount,deleteAccount} = require('../etc/database');
 const { generateToken } = require('../etc/token');
+const Redisclient = require('../etc/redisStore');
 
 /* GET login listing. */
 router.post('/', async function(req, res, next) {
@@ -16,6 +17,12 @@ router.post('/', async function(req, res, next) {
     if (result == 1){
         
         const token = generateToken({email :email});
+        console.log("Login Token:"+token);
+        Redisclient.get(email).then((data)=>{
+            if (data == null){
+                Redisclient.set(email,JSON.stringify({token:token,email:email,message:'login Token'}));
+            }
+        });
 
         res.status(200).json({ 
             email: email,
@@ -23,9 +30,9 @@ router.post('/', async function(req, res, next) {
             message: "로그인 성공"
         });
     }else if(result == 2){
-        res.status(401).json({ message: '로그인 실패 : 해당하는 Email 없음.' });
+        res.status(401).json({ message: '로그인 실패 : 해당하는 Email이 없습니다.' });
     }else{
-        res.status(401).json({ message: '로그인 실패 : 비밀번호 미일치.' });
+        res.status(401).json({ message: '로그인 실패 : 비밀번호가 일치 하지 않습니다.' });
     }
 
 });

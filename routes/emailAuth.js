@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
-const { CreateAccount , readAccount,updateAccount,deleteAccount} = require('../etc/database');
+const { readAccount} = require('../etc/database');
 const { generateToken } = require('../etc/token');
 const Redisclient = require('../etc/redisStore');
 const { generateOTP } = require('../etc/util');
