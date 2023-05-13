@@ -29,8 +29,33 @@ const CreateAccount = async (data) => {
   }
 };
 
+const CreateMeet = async (data) => {
+  console.log("DB create Meet");
+  const sql = 'INSERT INTO `groups` (`name`, `description`, `creator_id`,`profile`) VALUES (?,?,?,?)';
+  
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql, data);
+
+    console.log(rows);
+    console.log(fields);
+
+    // 멤버 추가
+    const sql2 = 'INSERT INTO `group_members` (`user_m_id`, `group_m_id`, `role`) VALUES (?,?,?)';
+    const [rows2, fields2] = await connection.execute(sql2, [data[2],rows.insertId,"admin"]);
+    console.log(rows2);
+    console.log(fields2);
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 // 이메일을 받아 , DB에서 조회 후 해당하는 결과 반환
-const readAccount = async (email) => {
+const readAccount = async (email,option) => {
   console.log("DB Read Account :" + email);
 
   // 이메일로 DB에서 검색 -> email은 중복이 안되도록 할 예정이기에 1개아니면 0개 반환 예상
@@ -44,13 +69,16 @@ const readAccount = async (email) => {
 
       const {
         email,
-        password
+        password,
+        user_id
       } = rows[0];
+
 
       console.log("readAccount _ query_result_email : " + email);
       console.log("readAccount _ query_result_pw : " + password);
 
-      return [email, password];
+      const result = option?[user_id]:[email,password];
+      return result;
     } else {
       return 0;
     }
@@ -111,5 +139,6 @@ module.exports = {
   readAccount,
   updateAccount,
   deleteAccount,
-  readMeetList
+  readMeetList,
+  CreateMeet
 };

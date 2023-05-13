@@ -9,6 +9,10 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+routes/test.js
+
+# 이미지 제외 .. 실 데이터가 저장되는 부분 제외
+public/images/
 
 # macOS
 .DS_Store
