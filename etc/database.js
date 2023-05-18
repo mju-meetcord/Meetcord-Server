@@ -54,6 +54,25 @@ const CreateMeet = async (data) => {
   }
 };
 
+const CreateNoti = async (data) => {
+  console.log("DB create Noti");
+  const sql = 'INSERT INTO `group_notifications` (`group_id`, `title`, `message`,`user_id`) VALUES (?,?,?,?)';
+  
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql, data);
+
+    console.log(rows);
+    console.log(fields);
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 // 이메일을 받아 , DB에서 조회 후 해당하는 결과 반환
 const readAccount = async (email,option) => {
   console.log("DB Read Account :" + email);
@@ -115,7 +134,7 @@ const readMeetList = async (data) => {
   console.log("DB Read MeetList");
 
 
-  const sql = 'SELECT name,description FROM `groups` WHERE name LIKE ?';
+  const sql = 'SELECT name,description,group_id FROM `groups` WHERE name LIKE ?';
 
   console.log("DB request query : " + sql);
 
@@ -134,11 +153,58 @@ const readMeetList = async (data) => {
   }
 };
 
+const readNotiList = async (data) => {
+  console.log("DB Read NotiList");
+
+  const sql = 'SELECT title,created_at,notification_id FROM group_notifications WHERE group_id IN (SELECT group_id FROM `groups`WHERE name = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    if (rows.length) {
+      console.log(rows);
+
+      return rows;
+    } else {
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+const readNotiListDetail = async (data) => {
+  console.log("DB Read NotiListDetail");
+
+  const sql = 'SELECT * FROM group_notifications WHERE notification_id= ?';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    if (rows.length) {
+      console.log(rows);
+
+      return rows[0];
+    } else {
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 module.exports = {
   CreateAccount,
   readAccount,
   updateAccount,
   deleteAccount,
   readMeetList,
-  CreateMeet
+  CreateMeet,
+  readNotiList,
+  readNotiListDetail,
+  CreateNoti,
 };

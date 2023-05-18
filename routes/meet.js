@@ -61,7 +61,11 @@ router.put('/',upload.single("image") , async function (req, res, next) {
     // 2. meet 생성 요청
     const name = req.body.name;
     const description = req.body.description;
-    const profile = req.file.path;
+    let profile = "/public/images/default.jpg";
+
+    if(req.file){
+        profile = req.file.path;
+    }
 
     const data = [name,description,creator_id[0],profile];
     console.log(data);

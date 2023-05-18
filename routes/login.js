@@ -19,9 +19,7 @@ router.post('/', async function(req, res, next) {
         const token = generateToken({email :email});
         console.log("Login Token:"+token);
         Redisclient.get(email).then((data)=>{
-            if (data == null){
-                Redisclient.set(email,JSON.stringify({token:token,email:email,message:'login Token'}));
-            }
+            Redisclient.set(email,JSON.stringify({token:token,email:email,message:'login Token'}));
         });
 
         res.status(200).json({ 
