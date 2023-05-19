@@ -55,11 +55,11 @@ router.put('/' , async function (req, res, next) {
 
     if(result == 1){
         res.status(200).json({ 
-            message: "meet 생성 성공"
+            message: "noti 생성 성공"
         });
     }else{
         res.status(401).json({ 
-            message: "meet 생성 실패"
+            message: "noti 생성 실패"
         });
     }
     

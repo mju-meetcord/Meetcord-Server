@@ -197,6 +197,28 @@ const readNotiListDetail = async (data) => {
   }
 };
 
+const DeleteNoti = async (data) => {
+  console.log("DB Delete Noti");
+
+  const sql = 'Delete FROM group_notifications WHERE notification_id= ?';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    if (rows.length) {
+      console.log(rows);
+
+      return 1;
+    } else {
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 module.exports = {
   CreateAccount,
   readAccount,
@@ -207,4 +229,5 @@ module.exports = {
   readNotiList,
   readNotiListDetail,
   CreateNoti,
+  DeleteNoti
 };
