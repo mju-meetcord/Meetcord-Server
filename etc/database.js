@@ -134,7 +134,7 @@ const readMeetList = async (data) => {
   console.log("DB Read MeetList");
 
 
-  const sql = 'SELECT name,description,group_id FROM `groups` WHERE name LIKE ?';
+  const sql = 'SELECT name,description,group_id,profile FROM `groups` WHERE name LIKE ?';
 
   console.log("DB request query : " + sql);
 
@@ -150,6 +150,29 @@ const readMeetList = async (data) => {
   } catch (err) {
     console.error(err);
     return 0;
+  }
+};
+
+const readMyMeetList = async (data) => {
+  console.log("DB Read MyMeetList");
+
+  const sql = 'SELECT role,group_id,name,profile,description FROM group_members AS gm JOIN `groups` AS g ON gm.group_m_id = g.group_id WHERE gm.user_m_id = ?';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[parseInt(data)]);
+    console.log(rows);
+    if (rows.length) {
+      console.log(rows);
+
+      return rows;
+    } else {
+      return [];
+    }
+  } catch (err) {
+    console.error(err);
+    return [];
   }
 };
 
@@ -219,6 +242,27 @@ const DeleteNoti = async (data) => {
   }
 };
 
+const UpdateNoti = async (data) => {
+  console.log("DB Delete Noti");
+
+  const sql = 'UPDATE group_notifications SET title = ?, message = ? WHERE (notification_id = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,data);
+    
+    if(rows.changedRows){
+      return 1;
+    }else{
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 module.exports = {
   CreateAccount,
   readAccount,
@@ -229,5 +273,7 @@ module.exports = {
   readNotiList,
   readNotiListDetail,
   CreateNoti,
-  DeleteNoti
+  DeleteNoti,
+  UpdateNoti,
+  readMyMeetList
 };

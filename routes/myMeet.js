@@ -2,21 +2,19 @@ var express = require('express');
 var router = express.Router();
 const { verifyToken } = require('../etc/token');
 const {
-    readMeetList
+    readAccount,
+    readMyMeetList
 } = require('../etc/database');
 
 router.post('/', async function (req, res, next) {
 
-    //const data = await readMeetList();
-    //console.log(data);
-
     console.log(req.body.token);
 
-    const email = verifyToken(req.body.token);
-    console.log(email);
+    const user_id = await readAccount(verifyToken(req.body.token),true);
+    const data = await readMyMeetList(user_id);
 
     res.status(200).json({
-        data:123
+        data:data
     });
 
     /*if (!data) {
