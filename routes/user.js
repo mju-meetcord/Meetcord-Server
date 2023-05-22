@@ -1,37 +1,61 @@
 var express = require('express');
 var router = express.Router();
-const { CreateAccount , readAccount,updateAccount,deleteAccount} = require('../etc/database');
+const { verifyToken } = require('../etc/token');
+const {readAccount,UpdateUser} = require('../etc/database');
 const multer = require('multer');
-const fs = require('fs');
 
-const upload = multer({
+
+const upload = multer({storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './public/images/user/');
+    },
+    filename: function (req, file, cb) {
+      const fileName = decodeURIComponent(file.originalname.toLowerCase().split(' ').join('-'));
+      console.log(fileName);
+      cb(null, fileName);
+    }
+  }),
     limits: {
-      fileSize: 10 * 1024 * 1024 // 10MB
+      fileSize: 100 * 1024 * 1024 // 10MB
     }
 });
 
-router.post('/',upload.single('image'),async function(req, res, next) {
-    console.log(req.body);
-    //const reuslt = await updateAccount("wjs2282@naver.com");
+router.get('/', async function (req, res, next) {
 
-    const dataUrl = req.body.image; // 저장할 Data URL
-    const matches = dataUrl.match(/^data:([A-Za-z-+/]+);base64,(.+)$/); // Data URL에서 MIME type과 base64 문자열 추출
+    console.log(req.query.token);
 
-    if (matches.length !== 3) {
-        throw new Error('Invalid Data URL format');
-    }
-
-    const extension = matches[1].split('/')[1]; // 파일 확장자 추출
-    const base64Data = matches[2]; // base64 문자열 추출
-    const buffer = Buffer.from(base64Data, 'base64'); // base64 문자열을 Buffer 객체로 변환
-
-    fs.writeFile(`./public/images/image.${extension}`, buffer, (err) => { // 파일 저장
-        if (err) throw err;
-        console.log('The file has been saved!');
+    const data = await readAccount(verifyToken(req.query.token));
+    
+    res.status(200).json({
+        data:{
+            email:data[0],
+            name:data[2],
+            birth:data[3],
+            prolie:data[4],
+            phone:data[5],
+            nickName:data[6]
+        }
     });
-
-
-    res.send({result:"qqqqqqqq"});
 });
+
+router.post('/',upload.single("image") ,async function (req, res, next) {
+
+    console.log(req.body.token);
+    console.log(req.body.nickname);
+    console.log(req.file.filename);
+    const id = await readAccount(verifyToken(req.body.token),true);
+    const result = await UpdateUser([req.body.nickname,req.file.filename,id[0]]);
+    
+    if(result==1){
+        res.status(200).json({
+            result:200
+        });
+    }else{
+        res.status(401).json({
+            result:401
+        });
+    }
+});
+
 
 module.exports = router;

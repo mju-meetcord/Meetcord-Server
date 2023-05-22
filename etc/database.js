@@ -89,14 +89,19 @@ const readAccount = async (email,option) => {
       const {
         email,
         password,
-        user_id
+        user_id,
+        name,
+        birthday,
+        profile_photo,
+        phone,
+        nickname
       } = rows[0];
 
 
       console.log("readAccount _ query_result_email : " + email);
       console.log("readAccount _ query_result_pw : " + password);
 
-      const result = option?[user_id]:[email,password];
+      const result = option?[user_id]:[email,password,name,birthday,profile_photo,phone,nickname];
       return result;
     } else {
       return 0;
@@ -243,9 +248,30 @@ const DeleteNoti = async (data) => {
 };
 
 const UpdateNoti = async (data) => {
-  console.log("DB Delete Noti");
+  console.log("DB Update Noti");
 
   const sql = 'UPDATE group_notifications SET title = ?, message = ? WHERE (notification_id = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,data);
+    
+    if(rows.changedRows){
+      return 1;
+    }else{
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+const UpdateUser = async (data) => {
+  console.log("DB Delete Noti");
+
+  const sql = 'UPDATE users SET nickname = ?, profile_photo = ? WHERE (user_id = ?)';
 
   console.log("DB request query : " + sql);
 
@@ -275,5 +301,6 @@ module.exports = {
   CreateNoti,
   DeleteNoti,
   UpdateNoti,
-  readMyMeetList
+  readMyMeetList,
+  UpdateUser
 };

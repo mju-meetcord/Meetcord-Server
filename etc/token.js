@@ -18,6 +18,7 @@ const verifyToken =(token)=>{
     console.log(err);
   }
 }
+
 module.exports  = {
     generateToken,
     verifyToken
