@@ -5,21 +5,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const routes = require('./routes');
+const app = express();
 
-var indexRouter = require('./routes/index');
-var loginRouter = require('./routes/login');
-var emailAuthRouter = require('./routes/emailAuth');
-var registerRouter = require('./routes/register');
-var userRouter = require('./routes/user');
-var meetRouter = require('./routes/meet');
-var myMeetRouter = require('./routes/myMeet');
-var notificationRouter = require('./routes/notification');
-var notificationDetailRouter = require('./routes/notificationDetail');
-var testRouter = require('./routes/test');
-
-var app = express();
-
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
@@ -31,7 +19,6 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use(bodyParser.json({limit:10000000}));
 app.use(bodyParser.json({
   limit: '50mb'
 }));
@@ -41,16 +28,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.use('/', indexRouter);
-app.use('/login', loginRouter);
-app.use('/emailAuth', emailAuthRouter);
-app.use('/register', registerRouter);
-app.use('/user', userRouter);
-app.use('/meet', meetRouter);
-app.use('/myMeet', myMeetRouter);
-app.use('/notification', notificationRouter);
-app.use('/notificationDtail', notificationDetailRouter);
-app.use('/test', testRouter);
+app.use('/', routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
