@@ -221,6 +221,28 @@ const readNotiList = async (data) => {
   }
 };
 
+const readMemberList = async (data) => {
+  console.log("DB Read readMemberList");
+
+  const sql = 'SELECT users.user_id,users.email,users.name,users.birthday,users.profile_photo,users.introduction,users.phone,users.nickname, group_members.role FROM users JOIN group_members ON users.user_id = group_members.user_m_id WHERE group_members.group_m_id = (SELECT group_id FROM `groups`WHERE name = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    if (rows.length) {
+      console.log(rows);
+
+      return rows;
+    } else {
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 const readNotiListDetail = async (data) => {
   console.log("DB Read NotiListDetail");
 
@@ -317,5 +339,6 @@ module.exports = {
   UpdateNoti,
   readMyMeetList,
   UpdateUser,
-  RegisterMeet
+  RegisterMeet,
+  readMemberList
 };
