@@ -53,6 +53,24 @@ const CreateMeet = async (data) => {
     return 0;
   }
 };
+const RegisterMeet = async (data) => {
+  console.log("DB register Meet");
+  const sql = 'INSERT INTO `group_members` (`user_m_id`, `group_m_id`, `role`) VALUES (?,?,?)';
+  
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql, data);
+
+    console.log(rows);
+    console.log(fields);
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
 
 const CreateNoti = async (data) => {
   console.log("DB create Noti");
@@ -278,11 +296,7 @@ const UpdateUser = async (data) => {
   try {
     const [rows, fields] = await connection.execute(sql,data);
     
-    if(rows.changedRows){
-      return 1;
-    }else{
-      return 0;
-    }
+    return 1;
   } catch (err) {
     console.error(err);
     return 0;
@@ -302,5 +316,6 @@ module.exports = {
   DeleteNoti,
   UpdateNoti,
   readMyMeetList,
-  UpdateUser
+  UpdateUser,
+  RegisterMeet
 };
