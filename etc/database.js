@@ -62,6 +62,11 @@ const RegisterMeet = async (data) => {
   try {
     const [rows, fields] = await connection.execute(sql, data);
 
+    const [rows2, fields2] = await connection.execute('SELECT COUNT(group_m_id) as count FROM group_members WHERE group_m_id = ?',[data[1]]);
+    console.log(rows2[0].count);
+
+    connection.execute('UPDATE `groups` SET `count` = ? WHERE `group_id` = ?',[rows2[0].count,data[1]]);
+
     console.log(rows);
     console.log(fields);
 
@@ -157,7 +162,7 @@ const readMeetList = async (data) => {
   console.log("DB Read MeetList");
 
 
-  const sql = 'SELECT name,description,group_id,profile FROM `groups` WHERE name LIKE ?';
+  const sql = 'SELECT name,description,group_id,profile,count FROM `groups` WHERE name LIKE ?';
 
   console.log("DB request query : " + sql);
 
@@ -179,7 +184,7 @@ const readMeetList = async (data) => {
 const readMyMeetList = async (data) => {
   console.log("DB Read MyMeetList");
 
-  const sql = 'SELECT role,group_id,name,profile,description FROM group_members AS gm JOIN `groups` AS g ON gm.group_m_id = g.group_id WHERE gm.user_m_id = ?';
+  const sql = 'SELECT role,group_id,name,profile,description,g.count,g.creator_id FROM group_members AS gm JOIN `groups` AS g ON gm.group_m_id = g.group_id WHERE gm.user_m_id = ?';
 
   console.log("DB request query : " + sql);
 
@@ -224,7 +229,7 @@ const readNotiList = async (data) => {
 const readMemberList = async (data) => {
   console.log("DB Read readMemberList");
 
-  const sql = 'SELECT users.user_id,users.email,users.name,users.birthday,users.profile_photo,users.introduction,users.phone,users.nickname, group_members.role FROM users JOIN group_members ON users.user_id = group_members.user_m_id WHERE group_members.group_m_id = (SELECT group_id FROM `groups`WHERE name = ?)';
+  const sql = 'SELECT users.user_id,users.email,users.name,users.birthday,users.profile_photo,users.introduction,users.phone,users.nickname, group_members.role, group_members.member_id FROM users JOIN group_members ON users.user_id = group_members.user_m_id WHERE group_members.group_m_id = (SELECT group_id FROM `groups`WHERE name = ?)';
 
   console.log("DB request query : " + sql);
 
@@ -287,6 +292,29 @@ const DeleteNoti = async (data) => {
   }
 };
 
+const DeleteMember = async (data) => {
+  console.log("DB Delete member");
+
+  const sql = 'SELECT group_m_id FROM group_members WHERE member_id=?';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows] = await connection.execute(sql,[data]);
+    const [rows2] = await connection.execute('Delete FROM group_members WHERE member_id= ?',[data]);
+
+    const [rows3]= await connection.execute('SELECT COUNT(group_m_id) as count FROM group_members WHERE group_m_id = ?',[rows[0].group_m_id]);
+    connection.execute('UPDATE `groups` SET `count` = ? WHERE `group_id` = ?',[rows3[0].count,rows[0].group_m_id]);
+
+    console.log(rows); 
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 const UpdateNoti = async (data) => {
   console.log("DB Update Noti");
 
@@ -325,6 +353,23 @@ const UpdateUser = async (data) => {
   }
 };
 
+const updateMember=async (data) => {
+  console.log("DB update member");
+
+  const sql = 'UPDATE group_members SET role = ? WHERE (member_id = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,data);
+    
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 module.exports = {
   CreateAccount,
   readAccount,
@@ -340,5 +385,7 @@ module.exports = {
   readMyMeetList,
   UpdateUser,
   RegisterMeet,
-  readMemberList
+  readMemberList,
+  updateMember,
+  DeleteMember
 };
