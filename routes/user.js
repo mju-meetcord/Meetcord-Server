@@ -33,7 +33,8 @@ router.get('/', async function (req, res, next) {
             birth:data[3],
             prolie:data[4],
             phone:data[5],
-            nickName:data[6]
+            nickName:data[6],
+            user_id:data[7]
         }
     });
 });

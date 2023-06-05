@@ -28,6 +28,8 @@ app.use(cors({
   credentials: true
 }));
 
+app.set("etag", false);
+
 app.use('/', routes);
 
 // catch 404 and forward to error handler

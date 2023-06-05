@@ -53,6 +53,28 @@ const CreateMeet = async (data) => {
     return 0;
   }
 };
+
+const CreateEvent = async (data) => {
+  console.log(data);
+  console.log("DB create Event");
+  const sql = 'INSERT INTO `group_events` (`group_e_id`, `title`, `description`,`start_time`,`end_time`,`place`,`joinlist`) VALUES ((SELECT group_id FROM `groups`WHERE name = ?),?,?,?,?,?,?)';
+  
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql, data);
+
+    console.log(rows);
+    console.log(fields);
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+
 const RegisterMeet = async (data) => {
   console.log("DB register Meet");
   const sql = 'INSERT INTO `group_members` (`user_m_id`, `group_m_id`, `role`) VALUES (?,?,?)';
@@ -96,6 +118,26 @@ const CreateNoti = async (data) => {
   }
 };
 
+
+const CreateRecord = async (data) => {
+  console.log("DB create record");
+  const sql = 'INSERT INTO `group_record` (`event_r_id`, `main_img`, `tag_message`,`detail`) VALUES (?,?,?,?)';
+  
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql, data);
+
+    console.log(rows);
+    console.log(fields);
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 // 이메일을 받아 , DB에서 조회 후 해당하는 결과 반환
 const readAccount = async (email,option) => {
   console.log("DB Read Account :" + email);
@@ -117,14 +159,14 @@ const readAccount = async (email,option) => {
         birthday,
         profile_photo,
         phone,
-        nickname
+        nickname,
       } = rows[0];
 
 
       console.log("readAccount _ query_result_email : " + email);
       console.log("readAccount _ query_result_pw : " + password);
 
-      const result = option?[user_id]:[email,password,name,birthday,profile_photo,phone,nickname];
+      const result = option?[user_id]:[email,password,name,birthday,profile_photo,phone,nickname,user_id];
       return result;
     } else {
       return 0;
@@ -154,8 +196,22 @@ const updateAccount = async (email) => {
   }
 };
 
-const deleteAccount = () => {
 
+const updateEvent = async (data) => {
+  console.log("DB update Account ");
+
+  const sql = 'UPDATE group_events SET  title=? , description=?, start_time=?, end_time=?, place=? WHERE event_id=?';
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql, data);
+
+    return 1;
+
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
 };
 
 const readMeetList = async (data) => {
@@ -220,6 +276,46 @@ const readNotiList = async (data) => {
     } else {
       return 0;
     }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+const readEventList = async (data) => {
+  console.log("DB Read NotiList");
+
+  const sql = 'SELECT * FROM group_events WHERE group_e_id IN (SELECT group_id FROM `groups`WHERE name = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    if (rows.length) {
+      console.log(rows);
+
+      return rows;
+    } else {
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+const readRecord = async (data) => {
+  console.log("DB Read record");
+
+  const sql = 'SELECT * FROM group_record WHERE event_r_id = ?';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    console.log(rows);
+
+    return rows;
   } catch (err) {
     console.error(err);
     return 0;
@@ -292,10 +388,28 @@ const DeleteNoti = async (data) => {
   }
 };
 
+const DeleteEvent = async (data) => {
+  console.log("DB Delete Event");
+
+  const sql = 'Delete FROM group_record WHERE  event_r_id= ?';
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    const sql2 = 'Delete FROM group_events WHERE  event_id= ?';
+    const [rows2, fields2] = await connection.execute(sql2,[data]);
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
 const DeleteMember = async (data) => {
   console.log("DB Delete member");
 
-  const sql = 'SELECT group_m_id FROM group_members WHERE member_id=?';
+  let sql = 'SELECT group_m_id FROM group_members WHERE member_id=?';
 
   console.log("DB request query : " + sql);
 
@@ -305,6 +419,28 @@ const DeleteMember = async (data) => {
 
     const [rows3]= await connection.execute('SELECT COUNT(group_m_id) as count FROM group_members WHERE group_m_id = ?',[rows[0].group_m_id]);
     connection.execute('UPDATE `groups` SET `count` = ? WHERE `group_id` = ?',[rows3[0].count,rows[0].group_m_id]);
+
+    console.log(rows); 
+
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+const DeleteMember2 = async (data) => {
+  console.log("DB Delete member");
+
+  let sql = 'SELECT * FROM group_members WHERE group_m_id IN (?)AND user_m_id IN (?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows] = await connection.execute(sql,data);
+    const [rows2] = await connection.execute('Delete FROM group_members WHERE member_id= ?',[rows[0].member_id]);
+
+    const [rows3]= await connection.execute('SELECT COUNT(group_m_id) as count FROM group_members WHERE group_m_id = ?',[data[0]]);
+    connection.execute('UPDATE `groups` SET `count` = ? WHERE `group_id` = ?',[rows3[0].count,data[0]]);
 
     console.log(rows); 
 
@@ -370,11 +506,67 @@ const updateMember=async (data) => {
   }
 };
 
+const UpdateRecord = async (data) => {
+  console.log("DB Delete Noti");
+
+  const sql = 'UPDATE group_record SET detail = ?,tag_message = ?, main_img = ? WHERE ( record_id = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,data);
+    
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+const readEvent = async (data) => {
+  console.log("DB Read NotiList");
+
+  const sql = 'SELECT * FROM group_events WHERE  event_id=?';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,[data]);
+    if (rows.length) {
+      console.log(rows);
+
+      return rows;
+    } else {
+      return 0;
+    }
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+const UpdateAttendencd = async (data) => {
+  console.log("DB Delete Noti");
+
+  const sql = 'UPDATE group_events SET joinlist = ? WHERE ( event_id = ?)';
+
+  console.log("DB request query : " + sql);
+
+  try {
+    const [rows, fields] = await connection.execute(sql,data);
+    
+    return 1;
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
+};
+
+
 module.exports = {
   CreateAccount,
   readAccount,
   updateAccount,
-  deleteAccount,
   readMeetList,
   CreateMeet,
   readNotiList,
@@ -387,5 +579,15 @@ module.exports = {
   RegisterMeet,
   readMemberList,
   updateMember,
-  DeleteMember
+  DeleteMember,
+  DeleteMember2,
+  readEventList,
+  CreateEvent,
+  updateEvent,
+  DeleteEvent,
+  readRecord,
+  UpdateRecord,
+  CreateRecord,
+  readEvent,
+  UpdateAttendencd
 };

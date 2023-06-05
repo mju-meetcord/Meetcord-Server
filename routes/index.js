@@ -10,6 +10,8 @@ const myMeetRouter = require('./myMeet');
 const notificationRouter = require('./notification');
 const notificationDetailRouter = require('./notificationDetail');
 const memberRouter = require('./member');
+const meetEventRouter = require('./meetEvent');
+const recordRouter = require('./record');
 const testRouter = require('./test');
 
 router.use('/login', loginRouter);
@@ -21,6 +23,8 @@ router.use('/myMeet', myMeetRouter);
 router.use('/notification', notificationRouter);
 router.use('/notificationDtail', notificationDetailRouter);
 router.use('/member', memberRouter);
+router.use('/meetEvent', meetEventRouter);
+router.use('/record', recordRouter);
 router.use('/test', testRouter);
 
 router.get('/', function(req, res, next) {
